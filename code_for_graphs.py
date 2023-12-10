@@ -8,6 +8,12 @@ sns.boxplot(x=df['average_montly_hours'])
 plt.title('Box Plot - Average Monthly Hours')
 plt.show()
 
+
+plt.figure(figsize=(10, 6))
+sns.boxplot(x=df['time_spend_company'])
+plt.title('Box Plot - Time Spent Company')
+plt.show()
+
 # Box plot for number of projects
 plt.figure(figsize=(10, 6))
 sns.boxplot(x=df['number_project'])

@@ -15,34 +15,37 @@ from statsmodels.formula.api import ols
 from statsmodels.stats.anova import anova_lm
 from sklearn.preprocessing import StandardScaler
 
+
+
+
 df = pd.read_csv('hr_analytics.csv')
 df = df.drop_duplicates(keep='last')
-df = pd.get_dummies(df,dtype=int)
-object = StandardScaler()
-print(df[['average_montly_hours','time_spend_company','number_project']].describe())
-df[['average_montly_hours','time_spend_company','number_project']]= (df[['average_montly_hours','time_spend_company','number_project']]-df[['average_montly_hours','time_spend_company','number_project']].min())/(df[['average_montly_hours','time_spend_company','number_project']].max()-df[['average_montly_hours','time_spend_company','number_project']].min())
-print(df[['average_montly_hours','time_spend_company','number_project']].describe())
-Y = df['left']
-x_train, x_test, y_train, y_test = train_test_split(df.drop('left', axis=1), Y, test_size=0.3, random_state=1)
-df.to_csv('dummy.csv')
-print(df)
+df = df.drop(columns='sales')
 
-models = {
-    'Decision Tree': DecisionTreeClassifier(criterion='entropy', random_state=100, max_depth=4),
-    'Random Forest': RandomForestClassifier(random_state=0),
-    'SVM': SVC(gamma='auto'),
-    'Binary Logistic Regression': LogisticRegression(solver='liblinear', random_state=1),
-    'Naive Bayes': GaussianNB(),
-    'K-Nearest Neighbor': KNeighborsClassifier(n_neighbors=6)
-}
-model = sm.Logit(y_train, x_train)
-result = model.fit(method='newton')
-print(result)
-for name, model in models.items():
-    print(f"{name}: ")
-    model.fit(x_train, y_train)
-    y_hat = model.predict(x_test)
-    acc = accuracy_score(y_test, y_hat)
-    # print(f"Accuracy: {acc}")
-    # print(f"F1: {f1_score(y_test, y_hat)}")
-    # print(f"Precision: {precision_score(y_test, y_hat)}")
+df = pd.get_dummies(df,dtype=int,drop_first=True)
+
+# Scaling the values using Min-Max Method:
+df[['average_montly_hours','time_spend_company','number_project']]= (df[['average_montly_hours','time_spend_company','number_project']]-df[['average_montly_hours','time_spend_company','number_project']].min())/(df[['average_montly_hours','time_spend_company','number_project']].max()-df[['average_montly_hours','time_spend_company','number_project']].min())
+# Specifying the Y var
+
+Y = df['left']
+# Setting up train and test
+x_train, x_test, y_train, y_test = train_test_split(df.drop('left', axis=1), Y, test_size=0.3, random_state=1)
+# Outputting as csv for viewing purposes
+df.to_csv('dummy.csv')
+# Create model
+model = sm.Logit(y_train, sm.add_constant(x_train)).fit()
+print(model.summary())
+# Get predictions
+y_pred_prob = model.predict(sm.add_constant(x_test))
+# Make pedictions binary
+y_pred_binary = (y_pred_prob >= 0.5).astype(int)
+# Calculate accuracy and precision
+accuracy = accuracy_score(y_test, y_pred_binary)
+precision = precision_score(y_test, y_pred_binary)
+f1 = f1_score(y_test, y_pred_binary)
+print("Accuracy:", accuracy)
+print("Precision:", precision)
+print("F1:", f1)
+
+
