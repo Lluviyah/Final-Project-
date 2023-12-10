@@ -1,0 +1,18 @@
+
+predicted value/dependent variable: "left". binary 0 for no, 1 for yes
+
+potential x variables: satisfaction_level, Work_accident, promotion_last_5_years
+
+
+#logistic regression odds of a state #####
+# how many have left vs how many have stayed .. out 15k employees #k has stayed ... also categories
+
+
+different ways to scale, do all of them or have all of them be on a normal distribution
+
+
+#big numbers may inflate the data, standardizing may lose some variance..
+#talk about how we fixed issues
+
+
+logistic.. coefficients predicting 1 
